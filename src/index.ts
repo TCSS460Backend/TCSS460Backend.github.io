@@ -15,7 +15,11 @@ app.use(cors());
  */
 app.use(express.json());
 
-app.use(routes);
+app.get('/debug', (req: Request, res: Response) => {
+    res.send('Debug route is working!');
+});
+
+app.use('/', routes);
 
 app.get('/', (request: Request, response: Response) => {
     response.send('<h1>Hello World!</h1>');

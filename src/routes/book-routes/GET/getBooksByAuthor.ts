@@ -1,5 +1,5 @@
-// #TODO DECIDE HOW WE WANT TO HANDLE MULTIPLE AUTHORS ON ONE BOOK IF LOOKING FOR A SPECIFIC AUTHOR
-// Maybe an issue of how spaces and commas are handled in the URL
+// #TODO DECIDE HOW WE WANT TO HANDLE MULTIPLE AUTHORS ON ONE BOOK IF LOOKING FOR A SPECIFIC AUTHOR AND VISE VERSA WHERE WE WANT TWO AUTHORS AND NOT ONE
+// Maybe an issue of how spaces and commas are handled in the URL (maybe could be made better, but using convential url encoding right now)
 
 import express, { NextFunction, Request, Response, Router } from 'express';
 import { pool, validationFunctions } from '../../../core/utilities';
@@ -14,7 +14,10 @@ function validAuthorParam(
 ) {
     let { authors } = request.params;
     
-    authors = decodeURIComponent(authors);
+    // First decode the URL-encoded string (this will convert %2C to comma and %20 to space)
+    authors = decodeURIComponent(authors)
+        .replace(/\+/g, ' ')     // Replace + with space
+        .trim();                 // Remove any leading/trailing whitespace
 
     request.params.authors = authors;
     
@@ -54,10 +57,22 @@ router.get(
     validAuthorParam,
     async (request: Request, response: Response) => {
         const { authors } = request.params;
-
+        
         try {
-            const theQuery = 'SELECT * FROM Books WHERE authors ILIKE $1';
-            const theValues = [`%${authors}%`];
+            // Split the authors string by comma and trim each author name
+            const authorList = authors.split(',').map(author => author.trim());
+            
+            // Create a WHERE clause that checks for each author
+            const theQuery = `
+                SELECT * FROM Books 
+                WHERE ${authorList.map((_, index) => 
+                    `authors ILIKE $${index + 1}`
+                ).join(' OR ')}
+            `;
+            
+            // Create array of author names with wildcards for partial matching
+            const theValues = authorList.map(author => `%${author}%`);
+            
             const theResult = await pool.query(theQuery, theValues);
 
             if (theResult.rows.length === 0) {
@@ -65,6 +80,7 @@ router.get(
                     message: 'No books found - No books match the provided author name.',
                 });
             }
+            return response.status(200).json(theResult.rows);
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {
                 response.status(503).send({

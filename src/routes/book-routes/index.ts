@@ -1,14 +1,12 @@
 import express, { Router } from 'express';
 import getBooksByAuthor from './GET/getBooksByAuthor';
 import getBooksByISBN from './GET/getBooksByISBN';
+import getBooksByRating from './GET/getBooksByRating';
 
 const booksRouter: Router = express.Router();
 
-// Remove the '/books' prefix here since it's already specified in the main routes file
-booksRouter.use([
-    getBooksByAuthor,
-    getBooksByISBN,
-    // Add more routes here as needed
-]);
+booksRouter.use(getBooksByAuthor);
+booksRouter.use(getBooksByISBN);
+booksRouter.use(getBooksByRating);
 
-export { booksRouter }; // Change to named export to match main routes file
+export { booksRouter };

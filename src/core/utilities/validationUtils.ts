@@ -42,6 +42,49 @@ function isNumber(x: any): x is number {
     return typeof x === 'number';
 }
 
+/**
+ * Checks the parameter to see if it can be a valid isbn13.
+ *
+ * @param {any} candidate the value to check
+ * @returns true if the parameter could be a valid isbn13, false otherwise
+ */
+function isValidISBN(candidate: any): boolean {
+    candidate = candidate.trim();
+    return candidate && candidate.length === 13 && isNumberProvided(candidate);
+}
+/**
+ * Checks the parameter to see if it can be a valid date. Valid dates are published in C.E.
+ * and no later than 5 years in the future from the present year. The extra 5 years are for
+ * planned publishings (to be released soon).
+ *
+ * @param {any} candidate the value to check
+ * @returns true if the parameter could be a valid publication year, false otherwise
+ */
+function isValidPublicationYear(candidate: any): boolean {
+    candidate = candidate.trim();
+    if (!isNumberProvided(candidate)) return false;
+    const currentYear = new Date().getFullYear();
+    const plannedPublishingBuffer = 5;
+    return (
+        Number.isInteger(candidate) &&
+        candidate >= 0 &&
+        candidate <= currentYear + plannedPublishingBuffer
+    );
+}
+
+/**
+ * Checks the parameter to see if it can be a valid imageURL.
+ *
+ * @param {any} candidate the value to check
+ * @returns true if the parameter could be a valid imageURL, false otherwise
+ */
+function isValidImageUrl(candidate: any): boolean {
+    if (typeof candidate !== 'string') return false;
+    // Regular expression to match typical URL patterns and image file extensions
+    const urlPattern: RegExp =
+        /^(https?:\/\/[^\s/$.?#].[^\s]*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))$/i;
+    return urlPattern.test(candidate);
+}
 // Feel free to add your own validations functions!
 // for example: isNumericProvided, isValidPassword, isValidEmail, etc
 // don't forget to export any
@@ -49,6 +92,9 @@ function isNumber(x: any): x is number {
 const validationFunctions = {
     isStringProvided,
     isNumberProvided,
+    isValidISBN,
+    isValidPublicationYear,
+    isValidImageUrl,
 };
 
 export { validationFunctions };

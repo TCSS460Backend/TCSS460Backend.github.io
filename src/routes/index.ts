@@ -11,6 +11,6 @@ const routes: Router = express.Router();
 routes.use(openRoutes);
 routes.use(authRoutes);
 routes.use(closedRoutes);
-routes.use('/books', booksRouter); // Add the /books prefix here
+routes.use('/books', booksRouter);
 
 export { routes };

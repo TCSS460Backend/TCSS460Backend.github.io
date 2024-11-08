@@ -91,6 +91,8 @@ function isValidImageUrl(candidate: any): boolean {
 const isValidPassword = (password: string): boolean =>
     isStringProvided(password) && password.length > 7;
 
+const isDefined = (param: any): boolean =>
+    param !== undefined && param !== null;
 // Feel free to add your own validations functions!
 // for example: isNumericProvided, isValidPassword, isValidEmail, etc
 // don't forget to export any
@@ -102,6 +104,7 @@ const validationFunctions = {
     isValidPublicationYear,
     isValidImageUrl,
     isValidPassword,
+    isDefined,
 };
 
 export { validationFunctions };

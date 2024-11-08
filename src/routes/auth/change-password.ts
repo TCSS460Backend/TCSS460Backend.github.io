@@ -29,10 +29,10 @@ const key = {
 };
 
 /**
- * @api {post} /change-password Request to change an existing user's password
+ * @api {patch} /change-password Request to change an existing user's password
  * @apiDescription Request to change a user's password to a provided new password
  *
- * @apiName PostChangePassword
+ * @apiName PatchChangePassword
  * @apiGroup Auth
  *
  * @apiBody {String} email a users email
@@ -48,7 +48,7 @@ const key = {
  * @apiError (400: Invalid Credentials) {String} message "Credentials did not match."
  *
  */
-changePasswordRouter.post(
+changePasswordRouter.patch(
     '/change-password',
     (request: AuthRequest, response: Response, next: NextFunction) => {
         if (

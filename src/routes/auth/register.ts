@@ -14,7 +14,6 @@ import {
 } from '../../core/utilities';
 
 const isStringProvided = validationFunctions.isStringProvided;
-const isNumberProvided = validationFunctions.isNumberProvided;
 const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
 

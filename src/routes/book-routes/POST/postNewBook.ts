@@ -67,18 +67,18 @@ function areRatingsProvided(request: Request, response: Response): boolean {
  * @apiName PostNewBook
  * @apiGroup Books
  *
- * @apiParam {String} isbn13 A 13-digit ISBN number
- * @apiParam {String} authors The names of the book's author(s)
- * @apiParam {String} publication_year A valid year of publication (0 C.E. to present day + 5 years)
- * @apiParam {String} original_title The original title of the book
- * @apiParam {String} title The book's title
- * @apiParam {Number} [rating_1_star=0] The count of 1 star ratings
- * @apiParam {Number} [rating_2_star=0] The count of 2 star ratings
- * @apiParam {Number} [rating_3_star=0] The count of 3 star ratings
- * @apiParam {Number} [rating_4_star=0] The count of 4 star ratings
- * @apiParam {Number} [rating_5_star=0] The count of 5 star ratings
- * @apiParam {String} image_url An image of the book
- * @apiParam {String} image_small_url A smaller image of the book
+ * @apiBody {String} isbn13 A 13-digit ISBN number
+ * @apiBody {String} authors The names of the book's author(s)
+ * @apiBody {String} publication_year A valid year of publication (0 C.E. to present day + 5 years)
+ * @apiBody {String} original_title The original title of the book
+ * @apiBody {String} title The book's title
+ * @apiBody {Number} [rating_1_star=0] The count of 1 star ratings
+ * @apiBody {Number} [rating_2_star=0] The count of 2 star ratings
+ * @apiBody {Number} [rating_3_star=0] The count of 3 star ratings
+ * @apiBody {Number} [rating_4_star=0] The count of 4 star ratings
+ * @apiBody {Number} [rating_5_star=0] The count of 5 star ratings
+ * @apiBody {String} image_url An image of the book
+ * @apiBody {String} image_small_url A smaller image of the book
  *
  * @apiSuccess (Success 201) {String} message "New book record successfully created."
  *

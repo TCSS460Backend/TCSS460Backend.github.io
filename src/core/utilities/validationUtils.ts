@@ -85,6 +85,12 @@ function isValidImageUrl(candidate: any): boolean {
         /^(https?:\/\/[^\s/$.?#].[^\s]*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))$/i;
     return urlPattern.test(candidate);
 }
+
+// Add more/your own password validation here. The *rules* must be documented
+// and the client-side validation should match these rules.
+const isValidPassword = (password: string): boolean =>
+    isStringProvided(password) && password.length > 7;
+
 // Feel free to add your own validations functions!
 // for example: isNumericProvided, isValidPassword, isValidEmail, etc
 // don't forget to export any
@@ -95,6 +101,7 @@ const validationFunctions = {
     isValidISBN,
     isValidPublicationYear,
     isValidImageUrl,
+    isValidPassword,
 };
 
 export { validationFunctions };

@@ -12,6 +12,8 @@ import patchRate from './PATCH/patchRate';
 import patchUpdateBook from './PATCH/patchUpdateBook';
 import patchUpdateRatings from './PATCH/patchUpdateRating';
 import postNewBook from './POST/postNewBook';
+import deleteBookByISB from './DELETE/deleteBookByISBN';
+import deleteBookRange from './DELETE/deleteBookRange';
 
 const booksRouter: Router = express.Router();
 
@@ -27,7 +29,9 @@ booksRouter.use(
     patchRate,
     patchUpdateBook,
     patchUpdateRatings,
-    postNewBook
+    postNewBook,
+    deleteBookByISB,
+    deleteBookRange
 );
 
 export { booksRouter };

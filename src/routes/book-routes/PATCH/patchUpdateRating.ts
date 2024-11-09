@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response, Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { pool, validationFunctions } from '../../../core/utilities';
 
 const router: Router = express.Router();

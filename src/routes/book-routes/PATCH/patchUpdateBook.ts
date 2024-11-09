@@ -14,8 +14,8 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @api {patch} /books/update/:isbn Request to alter a book's data by ISBN
  *
  * @apiDescription Request to altar a book's data using its ISBN-13 number. Does not cover rating
- * updates - see patchUpdateRatings. Must recive at least one field to update, else responds with
- * a 400 error.
+ * updates - see (Patch)Request to alter a book's ratings by ISBN. Must recive at least one field
+ * to update, else responds with a 400 error.
  *
  * @apiName patchUpdateBook
  * @apiGroup Books

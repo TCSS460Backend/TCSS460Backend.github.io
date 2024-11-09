@@ -12,7 +12,7 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  *
  * @apiDescription Request to altar a book's ratings using its ISBN-13 number. Individual ratings
  * are optional, though at least one rating must be provided else a 400 error will be returned. To
- * altar other book data see patchUpdateBook.
+ * altar other book data see (Patch)Request to alter a book's data by ISBN.
  *
  * @apiName patchUpdateRatings
  * @apiGroup Books

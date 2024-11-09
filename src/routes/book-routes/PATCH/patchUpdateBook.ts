@@ -24,7 +24,6 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  *
  * @apiBody {String} [authors] The names of the book's author(s)
  * @apiBody {String} [publication_year] A valid year of publication (0 C.E. to present day + 5 years)
- * @apiBody {String} [original_title] The original title of the book
  * @apiBody {String} [title] The book's title
  * @apiBody {String} [image_url] An image of the book
  * @apiBody {String} [image_small_url] A smaller image of the book
@@ -35,7 +34,6 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse ISBN to a valid number."
  * @apiError (400: Invalid authors) {String} message "Invalid author(s)."
  * @apiError (400: Invalid publication year) {String} message "Invalid publication year."
- * @apiError (400: Invalid original title) {String} message "Invalid original title."
  * @apiError (400: Invalid title) {String} message "Invalid title."
  * @apiError (400: Invalid image url) {String} message "Invalid image url."
  * @apiError (400: Invalid small image url) {String} message "Invalid small image url."
@@ -80,17 +78,21 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         response.status(400).send({
             message: 'Invalid publication year.',
         });
+        return;
     }
-    const originalTitleDefined = isDefined(request.body.original_title);
-    if (
-        originalTitleDefined &&
-        !isStringProvided(request.body.original_title) &&
-        !isNumberProvided(request.body.original_title)
-    ) {
-        response.status(400).send({
-            message: 'Invalid original title.',
-        });
-    }
+    /*
+     * Original Title should be ignored. Code artifact left for possible future use
+     */
+    // const originalTitleDefined = isDefined(request.body.original_title);
+    // if (
+    //     originalTitleDefined &&
+    //     !isStringProvided(request.body.original_title) &&
+    //     !isNumberProvided(request.body.original_title)
+    // ) {
+    //     response.status(400).send({
+    //         message: 'Invalid original title.',
+    //     });
+    // }
     const titleDefined = isDefined(request.body.title);
     if (
         titleDefined &&
@@ -116,7 +118,6 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
     if (
         !authorDefined &&
         !publishedDefined &&
-        !originalTitleDefined &&
         !titleDefined &&
         !imageDefined &&
         !smallImageDefined
@@ -140,10 +141,13 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
             setClauses.push(`publication_year = $${values.length + 1}`);
             values.push(request.body.publication_year);
         }
-        if (originalTitleDefined) {
-            setClauses.push(`original_title = $${values.length + 1}`);
-            values.push(request.body.original_title);
-        }
+        /*
+         * Original Title should be ignored. Code artifact left for possible future use
+         */
+        // if (originalTitleDefined) {
+        //     setClauses.push(`original_title = $${values.length + 1}`);
+        //     values.push(request.body.original_title);
+        // }
         if (titleDefined) {
             setClauses.push(`title = $${values.length + 1}`);
             values.push(request.body.title);

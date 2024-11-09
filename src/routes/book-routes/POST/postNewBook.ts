@@ -62,7 +62,7 @@ function areRatingsProvided(request: Request, response: Response): boolean {
  *
  * @apiDescription Request to insert a book with isbn13, authors, publication_year, original_title, title, image_url, and
  * image_small_url fields. Rating fields (rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star) are optional
- * parameters, but either none must be present or all must be present (including 0 values) and consist of valid values (>=0).
+ * parameters, but either none must be present or all must be present (including 0 values) and consist of valid values (rating >= 0).
  *
  * @apiName PostNewBook
  * @apiGroup Books

@@ -7,11 +7,11 @@ const isValidISBN = validationFunctions.isValidISBN;
 const isNumberProvided = validationFunctions.isNumberProvided;
 
 /**
- * @api {patch} /books/rate/:isbn Request to alter a book's ratings by ISBN
+ * @api {patch} /books/rate/:isbn Request to add or remove a book rating by ISBN
  *
- * @apiDescription Request to add a rating a book's ratings using its ISBN-13 number. Individual ratings
- * are optional, though at least one rating must be provided else a 400 error will be returned. To
- * altar other book data see patchUpdateBook.
+ * @apiDescription Request to add or remove a book rating using its ISBN-13 number. Defaults to
+ * adding a rating of the specified star value. If remove parameter is included in the body, can
+ * be set to remove a rating of the specified star value instead.
  *
  * @apiName patchRate
  * @apiGroup Books

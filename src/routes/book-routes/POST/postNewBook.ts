@@ -10,43 +10,6 @@ const isValidPublicationYear = validationFunctions.isValidPublicationYear;
 const isValidImageUrl = validationFunctions.isValidImageUrl;
 
 /*
- * Helper function, checks if either no ratings are provided or all are and valid.
- * If only some ratings are provided or ratings are invalid responds with a 400
- */
-function areRatingsProvided(request: Request, response: Response): boolean {
-    if (
-        isNumberProvided(request.body.rating_1_star) ||
-        isNumberProvided(request.body.rating_2_star) ||
-        isNumberProvided(request.body.rating_3_star) ||
-        isNumberProvided(request.body.rating_4_star) ||
-        isNumberProvided(request.body.rating_5_star)
-    ) {
-        if (
-            isNumberProvided(request.body.rating_1_star) &&
-            isNumberProvided(request.body.rating_2_star) &&
-            isNumberProvided(request.body.rating_3_star) &&
-            isNumberProvided(request.body.rating_4_star) &&
-            isNumberProvided(request.body.rating_5_star) &&
-            parseInt(request.body.rating_1_star, 10) >= 0 &&
-            parseInt(request.body.rating_2_star, 10) >= 0 &&
-            parseInt(request.body.rating_3_star, 10) >= 0 &&
-            parseInt(request.body.rating_4_star, 10) >= 0 &&
-            parseInt(request.body.rating_5_star, 10)
-        ) {
-            return true; //All ratings are provided and valid
-        } else {
-            //Either not all ratings are passed, some ratings are invalid, or a mix thereof
-            response.status(400).send({
-                message:
-                    'Ratings either incomplete or invalid - either send no ratings to resort to default values or send all ratings with valid inputs.',
-            });
-            return;
-        }
-    }
-    return false; //No ratings passed
-}
-
-/*
  * on {post} /books/new/
  * body = isbn13 BIGINT,
         authors TEXT,
@@ -62,7 +25,8 @@ function areRatingsProvided(request: Request, response: Response): boolean {
  *
  * @apiDescription Request to insert a book with isbn13, authors, publication_year, original_title, title, image_url, and
  * image_small_url fields. Rating fields (rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star) are optional
- * parameters, but either none must be present or all must be present (including 0 values) and consist of valid values (rating >= 0).
+ * parameters, if not provided or invalid values are provided will default to 0. Valid values consist of ratings >= 0. Note that
+ * a default value will be used in place of an error if an invalid value is provided.
  *
  * @apiName PostNewBook
  * @apiGroup Books
@@ -90,7 +54,6 @@ function areRatingsProvided(request: Request, response: Response): boolean {
  * @apiError (400: Invalid ImageURL) {String} message "Invalid or missing imageURL  - please refer to documentation"
  * @apiError (400: Invalid Small ImageURL) {String} message "Invalid or missing small imageURL  - please refer to documentation"
  * @apiError (400: Book Not Created) {String} message "Book could not be created - Verify ISBN is not already in database."
- * @apiError (400: Invalid Ratings) {String} message "Ratings either incomplete or invalid - either send no ratings to resort to default values or send all ratings with valid inputs."
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse isbn13 to a valid number."
  * @apiError (400: Parse Error) {String} message "Invalid Publication Year format - Unable to parse publication_year to a valid number."
  */
@@ -183,34 +146,35 @@ router.post(
 
     async (request: Request, response: Response) => {
         try {
-            //Assigns default values of 0 to ratings, overrides them iff there are valid provided ratings
-            let ratingAvg: number = 0.0;
-            let ratingCount: number = 0;
-            let rating1Star: number = 0;
-            let rating2Star: number = 0;
-            let rating3Star: number = 0;
-            let rating4Star: number = 0;
-            let rating5Star: number = 0;
-            if (areRatingsProvided(request, response)) {
-                rating1Star = parseInt(request.body.rating_1_star, 10);
-                rating2Star = parseInt(request.body.rating_2_star, 10);
-                rating3Star = parseInt(request.body.rating_3_star, 10);
-                rating4Star = parseInt(request.body.rating_4_star, 10);
-                rating5Star = parseInt(request.body.rating_5_star, 10);
-                ratingCount =
-                    rating1Star +
-                    rating2Star +
-                    rating3Star +
-                    rating4Star +
-                    rating5Star;
-                ratingAvg =
-                    (rating1Star +
-                        2 * rating2Star +
-                        3 * rating3Star +
-                        4 * rating4Star +
-                        5 * rating5Star) /
-                    ratingCount;
-            }
+            //Assigns default values of 0 to ratings if invalid or unprovided
+            const rating1Star = isNumberProvided(request.body.rating_1_star)
+                ? parseInt(request.body.rating_1_star, 10)
+                : 0;
+            const rating2Star = isNumberProvided(request.body.rating_2_star)
+                ? parseInt(request.body.rating_2_star, 10)
+                : 0;
+            const rating3Star = isNumberProvided(request.body.rating_3_star)
+                ? parseInt(request.body.rating_3_star, 10)
+                : 0;
+            const rating4Star = isNumberProvided(request.body.rating_4_star)
+                ? parseInt(request.body.rating_4_star, 10)
+                : 0;
+            const rating5Star = isNumberProvided(request.body.rating_5_star)
+                ? parseInt(request.body.rating_5_star, 10)
+                : 0;
+            const ratingCount =
+                rating1Star +
+                rating2Star +
+                rating3Star +
+                rating4Star +
+                rating5Star;
+            const ratingAvg =
+                (rating1Star +
+                    2 * rating2Star +
+                    3 * rating3Star +
+                    4 * rating4Star +
+                    5 * rating5Star) /
+                ratingCount;
 
             const numericIsbn = parseInt(request.body.isbn13, 10);
             if (isNaN(numericIsbn)) {

@@ -184,13 +184,16 @@ router.post(
                 });
             }
 
-            const theQuery = `INSERT INTO Books (isbn13, authors, publication_year, title, rating_avg, rating_count,
+            const originalTitle = 'originalTitleField'; // Artifact left for future code changes
+
+            const theQuery = `INSERT INTO Books (isbn13, authors, publication_year, original_title, title, rating_avg, rating_count,
                     rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star, image_url, image_small_url)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
             const theValues = [
                 numericIsbn,
                 request.body.authors,
                 numericPublicationYear,
+                originalTitle,
                 request.body.title,
                 ratingAvg,
                 ratingCount,

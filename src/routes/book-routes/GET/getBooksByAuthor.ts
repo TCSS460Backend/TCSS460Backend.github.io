@@ -50,8 +50,6 @@ function validAuthorParam(
  *
  * @apiError (400: Invalid Author) {String} message "Invalid or missing Author - The author name must be provided as a non-empty string."
  * @apiError (404: Not Found) {String} message "No books found - No books match the provided author name."
- * @apiError (503: Database Error) {String} message "Service Unavailable - Unable to connect to the database, make sure the port is correct."
- * @apiError (500: Server Error) {String} message "Internal Server Error - An unexpected error occurred while fetching the books by author."
  */
 router.get(
     '/author/:authors',

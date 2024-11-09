@@ -52,7 +52,6 @@ function validRatingParam(
  * @apiError (400: Invalid Rating) {String} message "Invalid or missing Rating - The rating must be a number."
  * @apiError (400: Invalid Range) {String} message "Invalid Rating - The rating must be between 1 and 5."
  * @apiError (404: Not Found) {String} message "No books found with the specified rating."
- * @apiError (500: Server Error) {String} message "Internal Server Error - An unexpected error occurred while fetching the books by rating."
  */
 router.get(
     '/rating/:rating',

@@ -52,7 +52,6 @@ function validYearParam(
  * @apiError (400: Invalid Year) {String} message "Invalid or missing Year - The year must be a number."
  * @apiError (400: Invalid Range) {String} message "Invalid Year - The year must be between 1000 and current_year."
  * @apiError (404: Not Found) {String} message "No books found with the specified publication year."
- * @apiError (500: Server Error) {String} message "Internal Server Error - An unexpected error occurred while fetching the books."
  */
 router.get(
     '/year/:year',

@@ -41,10 +41,6 @@ function validISBNParam(
  * @apiError (400: Invalid ISBN) {String} message "Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string."
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse ISBN to a valid number."
  * @apiError (404: Not Found) {String} message "Book not found - No book matches the provided ISBN."
- * @apiError (500: Data Error) {String} message "Data error - The book record is missing an ISBN."
- * @apiError (500: Data Error) {String} message "Data error - The book record is missing a title."
- * @apiError (503: Database Error) {String} message "Service Unavailable - Unable to connect to the database make sure the port is correct."
- * @apiError (500: Server Error) {String} message "Internal Server Error - An unexpected error occurred while fetching the book data."
  */
 router.get(
     '/isbn/:isbn',

@@ -9,17 +9,6 @@ const isNumberProvided = validationFunctions.isNumberProvided;
 const isValidPublicationYear = validationFunctions.isValidPublicationYear;
 const isValidImageUrl = validationFunctions.isValidImageUrl;
 
-/*
- * on {post} /books/new/
- * body = isbn13 BIGINT,
-        authors TEXT,
-        publication_year INT,
-        original_title TEXT,
-        title TEXT,
-        image_url TEXT,
-        image_small_url TEXT
- */
-
 /**
  * @api {post} /books/new Request to create a book entry
  *
@@ -34,7 +23,6 @@ const isValidImageUrl = validationFunctions.isValidImageUrl;
  * @apiBody {String} isbn13 A 13-digit ISBN number
  * @apiBody {String} authors The names of the book's author(s)
  * @apiBody {String} publication_year A valid year of publication (0 C.E. to present day + 5 years)
- * @apiBody {String} original_title The original title of the book
  * @apiBody {String} title The book's title
  * @apiBody {Number} [rating_1_star=0] The count of 1 star ratings
  * @apiBody {Number} [rating_2_star=0] The count of 2 star ratings
@@ -46,13 +34,12 @@ const isValidImageUrl = validationFunctions.isValidImageUrl;
  *
  * @apiSuccess (Success 201) {String} message "New book record successfully created."
  *
- * @apiError (400: Invalid ISBN) {String} message "Invalid or missing isbn13  - please refer to documentation"
- * @apiError (400: Invalid Author) {String} message "Invalid or missing author(s)  - please refer to documentation"
+ * @apiError (400: Invalid ISBN) {String} message "Invalid or missing isbn13  - isbn13 must be a 13 digit isbn number"
+ * @apiError (400: Invalid Author) {String} message "Invalid or missing author(s)  - authors is a text field, check parameter type. Also consider length."
  * @apiError (400: Invalid Publication Year) {String} message "Invalid or missing publication year  - publication years must be in C.E. and no more than 5 years in the future"
- * @apiError (400: Invalid Original Title) {String} message "Invalid or missing original_title  - please refer to documentation"
- * @apiError (400: Invalid Title) {String} message "Invalid or missing title  - please refer to documentation"
- * @apiError (400: Invalid ImageURL) {String} message "Invalid or missing imageURL  - please refer to documentation"
- * @apiError (400: Invalid Small ImageURL) {String} message "Invalid or missing small imageURL  - please refer to documentation"
+ * @apiError (400: Invalid Title) {String} message "Invalid or missing title  - title is a text field, check parameter type. Also consider length."
+ * @apiError (400: Invalid ImageURL) {String} message "Invalid or missing imageURL  - must be a url of one of these types: png|jpg|jpeg|gif|bmp|webp|svg"
+ * @apiError (400: Invalid Small ImageURL) {String} message "Invalid or missing small imageURL  - must be a url of one of these types: png|jpg|jpeg|gif|bmp|webp|svgn"
  * @apiError (400: Book Not Created) {String} message "Book could not be created - Verify ISBN is not already in database."
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse isbn13 to a valid number."
  * @apiError (400: Parse Error) {String} message "Invalid Publication Year format - Unable to parse publication_year to a valid number."
@@ -66,7 +53,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing isbn13  - please refer to documentation',
+                    'Invalid or missing isbn13  - isbn13 must be a 13 digit isbn number',
             });
             return;
         }
@@ -78,7 +65,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing author(s)  - please refer to documentation',
+                    'Invalid or missing author(s)  - authors is a text field, check parameter type. Also consider length.',
             });
             return;
         }
@@ -95,18 +82,21 @@ router.post(
             return;
         }
     },
-    (request: Request, response: Response, next: NextFunction) => {
-        if (isStringProvided(request.body.original_title)) {
-            next();
-            return;
-        } else {
-            response.status(400).send({
-                message:
-                    'Invalid or missing original_title  - please refer to documentation',
-            });
-            return;
-        }
-    },
+    /*
+     * Original Title should be ignored. Code artifact left for possible future use
+     */
+    // (request: Request, response: Response, next: NextFunction) => {
+    //     if (isStringProvided(request.body.original_title)) {
+    //         next();
+    //         return;
+    //     } else {
+    //         response.status(400).send({
+    //             message:
+    //                 'Invalid or missing original_title  - please refer to documentation',
+    //         });
+    //         return;
+    //     }
+    // },
     (request: Request, response: Response, next: NextFunction) => {
         if (isStringProvided(request.body.title)) {
             next();
@@ -114,7 +104,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing title  - please refer to documentation',
+                    'Invalid or missing title  - title is a text field, check parameter type. Also consider length.',
             });
             return;
         }
@@ -126,7 +116,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing imageURL  - please refer to documentation',
+                    'Invalid or missing imageURL  - must be a url of one of these types: png|jpg|jpeg|gif|bmp|webp|svg',
             });
             return;
         }
@@ -138,7 +128,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing small imageURL  - please refer to documentation',
+                    'Invalid or missing small imageURL  - must be a url of one of these types: png|jpg|jpeg|gif|bmp|webp|svg',
             });
             return;
         }
@@ -194,14 +184,13 @@ router.post(
                 });
             }
 
-            const theQuery = `INSERT INTO Books (isbn13, authors, publication_year, original_title, title, rating_avg, rating_count,
+            const theQuery = `INSERT INTO Books (isbn13, authors, publication_year, title, rating_avg, rating_count,
                     rating_1_star, rating_2_star, rating_3_star, rating_4_star, rating_5_star, image_url, image_small_url)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`;
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`;
             const theValues = [
                 numericIsbn,
                 request.body.authors,
                 numericPublicationYear,
-                request.body.original_title,
                 request.body.title,
                 ratingAvg,
                 ratingCount,

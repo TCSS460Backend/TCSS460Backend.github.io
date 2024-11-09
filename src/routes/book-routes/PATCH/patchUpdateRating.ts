@@ -11,19 +11,19 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @api {patch} /books/update/ratings/:isbn Request to alter a book's ratings by ISBN
  *
  * @apiDescription Request to altar a book's ratings using its ISBN-13 number. Individual ratings
- * are optional, though at least one rating must be provided else a 400 error will be returned. To
- * altar other book data see (Patch)Request to alter a book's data by ISBN.
+ * are optional, though at least one new rating must be provided else a 400 error will be returned.
+ * To altar other book data see (Patch)Request to alter a book's data by ISBN.
  *
  * @apiName patchUpdateRatings
  * @apiGroup Books
  *
  * @apiParam {String} isbn A 13-digit ISBN number
  *
- * @apiBody {Number} [rating_1_star=0] The count of 1 star ratings
- * @apiBody {Number} [rating_2_star=0] The count of 2 star ratings
- * @apiBody {Number} [rating_3_star=0] The count of 3 star ratings
- * @apiBody {Number} [rating_4_star=0] The count of 4 star ratings
- * @apiBody {Number} [rating_5_star=0] The count of 5 star ratings
+ * @apiBody {Number} [rating_1_star] The count of 1 star ratings
+ * @apiBody {Number} [rating_2_star] The count of 2 star ratings
+ * @apiBody {Number} [rating_3_star] The count of 3 star ratings
+ * @apiBody {Number} [rating_4_star] The count of 4 star ratings
+ * @apiBody {Number} [rating_5_star] The count of 5 star ratings
  *
  * @apiSuccess {String} message "Sucessfully updated book ratings."
  *

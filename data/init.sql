@@ -23,8 +23,9 @@ CREATE TABLE Account_Credential (Credential_ID SERIAL PRIMARY KEY,
                       FOREIGN KEY(Account_ID) REFERENCES Account(Account_ID)
 );
 
-CREATE TABLE BOOKS (id INT PRIMARY KEY,
-        isbn13 BIGINT,
+-- Modified books table to use isbn13 as primary key instead of id
+CREATE TABLE BOOKS (id INT,
+        isbn13 BIGINT PRIMARY KEY,
         authors TEXT,
         publication_year INT,
         original_title TEXT,

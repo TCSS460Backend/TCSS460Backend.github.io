@@ -1,0 +1,545 @@
+{
+	"info": {
+		"_postman_id": "6a5b0b84-0a9d-4d81-8bf7-ae7114a27598",
+		"name": "GET-Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39307490",
+		"_collection_link": "https://tcss-backend-project.postman.co/workspace/TCSS-Backend-Project-Workspace~5d0dbd3c-aaa7-4d5b-923f-b6e25dd456e6/collection/31894199-6a5b0b84-0a9d-4d81-8bf7-ae7114a27598?action=share&source=collection_link&creator=39307490"
+	},
+	"item": [
+		{
+			"name": "Register For Auth Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response has expected elements\", () => {\r",
+							"    const body = pm.response.json()\r",
+							"    pm.expect(body).to.have.ownProperty(\"accessToken\");\r",
+							"    pm.expect(body).to.have.ownProperty(\"id\");\r",
+							"})\r",
+							"pm.collectionVariables.set(\"jwt\", pm.response.json().accessToken);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"username\": \"{{$randomUserName}}\",\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"{{$randomPassword}}\",\r\n    \"phone\": \"{{$randomPhoneNumber}}\",\r\n    \"role\": \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:4000/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBooksByISBN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const accessToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiMSIsImlkIjo0LCJpYXQiOjE3MzExMTM5NDcsImV4cCI6MTczMjMyMzU0N30.Saeg1StCsECY8z7SA8NMOcFxs4-na3ce5BuKs6RvNqQ\";\r",
+							"\r",
+							"const testCases = [\r",
+							"    {\r",
+							"        isbn: \"923723\", // Invalid ISBN length\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.\",\r",
+							"        testName: \"Test Case: Invalid ISBN Length\"\r",
+							"    },\r",
+							"    {\r",
+							"        isbn: \"23234dsahdsa4\", // Invalid ISBN format (contains letters)\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.\",\r",
+							"        testName: \"Test Case: Invalid ISBN Format\"\r",
+							"    },\r",
+							"    {\r",
+							"        isbn: \"1111111111111\", // Valid length but book not found\r",
+							"        expectedStatus: 404,\r",
+							"        expectedMessage: \"Book not found - No book matches the provided ISBN.\",\r",
+							"        testName: \"Test Case: Book Not Found\"\r",
+							"    },\r",
+							"];\r",
+							"\r",
+							"testCases.forEach((testCase) => {\r",
+							"    pm.sendRequest({\r",
+							"        url: `http://localhost:4000/books/isbn/${testCase.isbn}`,\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${accessToken}`\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.test(testCase.testName, function () {\r",
+							"            pm.expect(res).to.have.status(testCase.expectedStatus);\r",
+							"            const jsonData = res.json();\r",
+							"            pm.expect(jsonData.message).to.eql(testCase.expectedMessage);\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/books/isbn/9780439023480\n\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books",
+						"isbn",
+						"9780439023480\n\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBooksByAuthor",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const accessToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiMSIsImlkIjo0LCJpYXQiOjE3MzExMTM5NDcsImV4cCI6MTczMjMyMzU0N30.Saeg1StCsECY8z7SA8NMOcFxs4-na3ce5BuKs6RvNqQ\";\r",
+							"\r",
+							"const testCases = [\r",
+							"    {\r",
+							"        authors: \" \", // Empty author name\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid or missing Author - The author name must be provided as a non-empty string.\",\r",
+							"        testName: \"Test Case: Empty Author Name\"\r",
+							"    },\r",
+							"    {\r",
+							"        authors: \"RandomAUTHORRRJISDJUISD\", // Valid format but author not found\r",
+							"        expectedStatus: 404,\r",
+							"        expectedMessage: \"No books found - No books match the provided author name.\",\r",
+							"        testName: \"Test Case: Author Not Found\"\r",
+							"    },\r",
+							"    {\r",
+							"        authors: \"J.K.+Rowling\", // Single valid author with spaces\r",
+							"        expectedStatus: 200,\r",
+							"        expectedMessage: null, \r",
+							"        testName: \"Test Case: Single Valid Author\"\r",
+							"    },\r",
+							"];\r",
+							"\r",
+							"testCases.forEach((testCase) => {\r",
+							"    pm.sendRequest({\r",
+							"        url: `http://localhost:4000/books/author/${encodeURIComponent(testCase.authors)}`,\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${accessToken}`\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.test(testCase.testName, function () {\r",
+							"            pm.expect(res).to.have.status(testCase.expectedStatus);\r",
+							"            const jsonData = res.json();\r",
+							"            if (testCase.expectedMessage) {\r",
+							"                pm.expect(jsonData.message).to.eql(testCase.expectedMessage);\r",
+							"            } else if (testCase.expectedStatus === 200) {\r",
+							"                pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+							"            }\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/books/author/J.K. Rowling\n\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books",
+						"author",
+						"J.K. Rowling\n\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBooksByRating",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const accessToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiMSIsImlkIjo0LCJpYXQiOjE3MzExMTM5NDcsImV4cCI6MTczMjMyMzU0N30.Saeg1StCsECY8z7SA8NMOcFxs4-na3ce5BuKs6RvNqQ\";\r",
+							"\r",
+							"const testCases = [\r",
+							"    {\r",
+							"        rating: \"abc\", // Non-numeric rating\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid or missing Rating - The rating must be a number.\",\r",
+							"        testName: \"Test Case: Non-numeric Rating\"\r",
+							"    },\r",
+							"    {\r",
+							"        rating: \"0\", // Rating out of range (too low)\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid Rating - The rating must be between 1 and 5.\",\r",
+							"        testName: \"Test Case: Rating Too Low\"\r",
+							"    },\r",
+							"    {\r",
+							"        rating: \"6\", // Rating out of range (too high)\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid Rating - The rating must be between 1 and 5.\",\r",
+							"        testName: \"Test Case: Rating Too High\"\r",
+							"    },\r",
+							"    {\r",
+							"        rating: \"1.1\", // Valid rating but no matching books\r",
+							"        expectedStatus: 404,\r",
+							"        expectedMessage: \"No books found with the specified rating.\",\r",
+							"        testName: \"Test Case: No Books Found\"\r",
+							"    }\r",
+							"];\r",
+							"\r",
+							"testCases.forEach((testCase) => {\r",
+							"    pm.sendRequest({\r",
+							"        url: `http://localhost:4000/books/rating/${testCase.rating}`,\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${accessToken}`\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.test(testCase.testName, function () {\r",
+							"            pm.expect(res).to.have.status(testCase.expectedStatus);\r",
+							"            const jsonData = res.json();\r",
+							"            if (testCase.expectedMessage) {\r",
+							"                pm.expect(jsonData.message).to.eql(testCase.expectedMessage);\r",
+							"            } else if (testCase.expectedStatus === 200) {\r",
+							"                pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+							"            }\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/books/rating/4.0",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books",
+						"rating",
+						"4.0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBooksByTitle",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const accessToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiMSIsImlkIjo0LCJpYXQiOjE3MzExMTM5NDcsImV4cCI6MTczMjMyMzU0N30.Saeg1StCsECY8z7SA8NMOcFxs4-na3ce5BuKs6RvNqQ\";\r",
+							"\r",
+							"const testCases = [\r",
+							"    {\r",
+							"        title: \"The Great Gatsby\", // Valid title with exact match\r",
+							"        expectedStatus: 200,\r",
+							"        expectedMessage: null, // Assuming no specific message for successful requests\r",
+							"        testName: \"Test Case: Valid Title\"\r",
+							"    },\r",
+							"    {\r",
+							"        title: \"Nonexistent Book Title\", // Valid format but title not found\r",
+							"        expectedStatus: 404,\r",
+							"        expectedMessage: \"No books found - No books match the provided title.\",\r",
+							"        testName: \"Test Case: Title Not Found\"\r",
+							"    },\r",
+							"    {\r",
+							"        title: \"The+Great+Gatsby\", // Valid title with spaces encoded as '+'\r",
+							"        expectedStatus: 200,\r",
+							"        expectedMessage: null,\r",
+							"        testName: \"Test Case: Valid Title with Encoded Spaces\"\r",
+							"    },\r",
+							"    {\r",
+							"        title: \"Gatsby\", // Partial match\r",
+							"        expectedStatus: 200,\r",
+							"        expectedMessage: null,\r",
+							"        testName: \"Test Case: Partial Title Match\"\r",
+							"    }\r",
+							"];\r",
+							"\r",
+							"testCases.forEach((testCase) => {\r",
+							"    pm.sendRequest({\r",
+							"        url: `http://localhost:4000/books/title/${encodeURIComponent(testCase.title)}`,\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${accessToken}`\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.test(testCase.testName, function () {\r",
+							"            pm.expect(res).to.have.status(testCase.expectedStatus);\r",
+							"            const jsonData = res.json();\r",
+							"            if (testCase.expectedMessage) {\r",
+							"                pm.expect(jsonData.message).to.eql(testCase.expectedMessage);\r",
+							"            } else if (testCase.expectedStatus === 200) {\r",
+							"                pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+							"            }\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/books/title/Hunger Games",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books",
+						"title",
+						"Hunger Games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getBooksByPublicationYear",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const accessToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiMSIsImlkIjo0LCJpYXQiOjE3MzExMTM5NDcsImV4cCI6MTczMjMyMzU0N30.Saeg1StCsECY8z7SA8NMOcFxs4-na3ce5BuKs6RvNqQ\";\r",
+							"\r",
+							"const currentYear = new Date().getFullYear();\r",
+							"\r",
+							"const testCases = [\r",
+							"    {\r",
+							"        year: \"abcd\", // Non-numeric year\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: \"Invalid or missing Year - The year must be a number.\",\r",
+							"        testName: \"Test Case: Non-numeric Year\"\r",
+							"    },\r",
+							"    {\r",
+							"        year: \"500\", // Year below acceptable range\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: `Invalid Year - The year must be between 1000 and ${currentYear}.`,\r",
+							"        testName: \"Test Case: Year Too Early\"\r",
+							"    },\r",
+							"    {\r",
+							"        year: (currentYear + 1).toString(), // Year above acceptable range\r",
+							"        expectedStatus: 400,\r",
+							"        expectedMessage: `Invalid Year - The year must be between 1000 and ${currentYear}.`,\r",
+							"        testName: \"Test Case: Future Year\"\r",
+							"    },\r",
+							"    {\r",
+							"        year: \"1800\", // Valid year but no matching books\r",
+							"        expectedStatus: 404,\r",
+							"        expectedMessage: \"No books found with the specified publication year.\",\r",
+							"        testName: \"Test Case: Year Not Found\"\r",
+							"    }\r",
+							"];\r",
+							"\r",
+							"testCases.forEach((testCase) => {\r",
+							"    pm.sendRequest({\r",
+							"        url: `http://localhost:4000/books/year/${testCase.year}`,\r",
+							"        method: 'GET',\r",
+							"        header: {\r",
+							"            \"Authorization\": `Bearer ${accessToken}`\r",
+							"        }\r",
+							"    }, function (err, res) {\r",
+							"        pm.test(testCase.testName, function () {\r",
+							"            pm.expect(res).to.have.status(testCase.expectedStatus);\r",
+							"            const jsonData = res.json();\r",
+							"            if (testCase.expectedMessage) {\r",
+							"                pm.expect(jsonData.message).to.eql(testCase.expectedMessage);\r",
+							"            } else if (testCase.expectedStatus === 200) {\r",
+							"                pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+							"            }\r",
+							"        });\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/books/year/2008",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"books",
+						"year",
+						"2008"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "jwt",
+			"value": ""
+		}
+	]
+}

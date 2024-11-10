@@ -23,8 +23,7 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @apiParam {String} isbn A 13-digit ISBN number
  *
  * @apiBody {String} [authors] The names of the book's author(s)
- * @apiBody {String} [publication_year] A valid year of publication (0 C.E. to present day + 5 years)
- * @apiBody {String} [original_title] The original title of the book
+ * @apiBody {Number} [publication_year] A valid year of publication (0 C.E. to present day + 5 years)
  * @apiBody {String} [title] The book's title
  * @apiBody {String} [image_url] An image of the book
  * @apiBody {String} [image_small_url] A smaller image of the book
@@ -35,7 +34,6 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse ISBN to a valid number."
  * @apiError (400: Invalid authors) {String} message "Invalid author(s)."
  * @apiError (400: Invalid publication year) {String} message "Invalid publication year."
- * @apiError (400: Invalid original title) {String} message "Invalid original title."
  * @apiError (400: Invalid title) {String} message "Invalid title."
  * @apiError (400: Invalid image url) {String} message "Invalid image url."
  * @apiError (400: Invalid small image url) {String} message "Invalid small image url."
@@ -45,6 +43,13 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  */
 router.patch('/update/:isbn', async (request: Request, response: Response) => {
     let { isbn } = request.params;
+    if (!isStringProvided(isbn)) {
+        response.status(400).send({
+            message:
+                'Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.',
+        });
+        return;
+    }
     isbn = isbn.trim();
     if (!isValidISBN(isbn)) {
         response.status(400).send({
@@ -53,6 +58,7 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         });
         return;
     }
+
     const numericIsbn = parseInt(isbn, 10);
     if (isNaN(numericIsbn)) {
         response.status(400).send({
@@ -80,17 +86,28 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         response.status(400).send({
             message: 'Invalid publication year.',
         });
+        return;
     }
-    const originalTitleDefined = isDefined(request.body.original_title);
-    if (
-        originalTitleDefined &&
-        !isStringProvided(request.body.original_title) &&
-        !isNumberProvided(request.body.original_title)
-    ) {
-        response.status(400).send({
-            message: 'Invalid original title.',
-        });
+    //This code coerces a number passed as a string into a number - verified by isValidPublicationYear
+    if (!isNumberProvided(request.body.publication_year)) {
+        request.body.publication_year = parseInt(
+            request.body.publication_year,
+            10
+        );
     }
+    /*
+     * Original Title should be ignored. Code artifact left for possible future use
+     */
+    // const originalTitleDefined = isDefined(request.body.original_title);
+    // if (
+    //     originalTitleDefined &&
+    //     !isStringProvided(request.body.original_title) &&
+    //     !isNumberProvided(request.body.original_title)
+    // ) {
+    //     response.status(400).send({
+    //         message: 'Invalid original title.',
+    //     });
+    // }
     const titleDefined = isDefined(request.body.title);
     if (
         titleDefined &&
@@ -116,7 +133,6 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
     if (
         !authorDefined &&
         !publishedDefined &&
-        !originalTitleDefined &&
         !titleDefined &&
         !imageDefined &&
         !smallImageDefined
@@ -140,10 +156,13 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
             setClauses.push(`publication_year = $${values.length + 1}`);
             values.push(request.body.publication_year);
         }
-        if (originalTitleDefined) {
-            setClauses.push(`original_title = $${values.length + 1}`);
-            values.push(request.body.original_title);
-        }
+        /*
+         * Original Title should be ignored. Code artifact left for possible future use
+         */
+        // if (originalTitleDefined) {
+        //     setClauses.push(`original_title = $${values.length + 1}`);
+        //     values.push(request.body.original_title);
+        // }
         if (titleDefined) {
             setClauses.push(`title = $${values.length + 1}`);
             values.push(request.body.title);

@@ -1,4 +1,7 @@
 
+-- We chose to use init.sql, NOT this file for production code!
+
+
 // Revised schema for backend in MySQL rather than Postgres, should be in BCNF form (haven't tested yet)
 CREATE TABLE Authors ( // authors are now many-to-many relationship with books
   Author_Id INT AUTO_INCREMENT PRIMARY KEY, 

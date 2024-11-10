@@ -5,6 +5,7 @@ const router: Router = express.Router();
 
 const isValidISBN = validationFunctions.isValidISBN;
 const isNumberProvided = validationFunctions.isNumberProvided;
+const isStringProvided = validationFunctions.isStringProvided;
 
 /**
  * @api {patch} /books/rate/:isbn Request to add or remove a book rating by ISBN
@@ -33,6 +34,13 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  */
 router.patch('/rate/:isbn', async (request: Request, response: Response) => {
     let { isbn } = request.params;
+    if (!isStringProvided(isbn)) {
+        response.status(400).send({
+            message:
+                'Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.',
+        });
+        return;
+    }
     isbn = isbn.trim();
     if (!isValidISBN(isbn)) {
         response.status(400).send({

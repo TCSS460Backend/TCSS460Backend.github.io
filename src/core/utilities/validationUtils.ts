@@ -49,7 +49,6 @@ function isNumber(x: any): x is number {
  * @returns true if the parameter could be a valid isbn13, false otherwise
  */
 function isValidISBN(candidate: any): boolean {
-    candidate = candidate.trim();
     return candidate && candidate.length === 13 && isNumberProvided(candidate);
 }
 /**
@@ -61,12 +60,15 @@ function isValidISBN(candidate: any): boolean {
  * @returns true if the parameter could be a valid publication year, false otherwise
  */
 function isValidPublicationYear(candidate: any): boolean {
-    candidate = candidate.trim();
-    if (!isNumberProvided(candidate)) return false;
+    if (!isNumberProvided(candidate) && !isStringProvided(candidate))
+        return false;
     const currentYear = new Date().getFullYear();
     const plannedPublishingBuffer = 5;
+    //if a string is passed, attempts to parse to a number
+    const year =
+        typeof candidate === 'string' ? parseInt(candidate, 10) : candidate;
     return (
-        Number.isInteger(candidate) &&
+        Number.isInteger(year) &&
         candidate >= 0 &&
         candidate <= currentYear + plannedPublishingBuffer
     );
@@ -81,8 +83,8 @@ function isValidPublicationYear(candidate: any): boolean {
 function isValidImageUrl(candidate: any): boolean {
     if (typeof candidate !== 'string') return false;
     // Regular expression to match typical URL patterns and image file extensions
-    const urlPattern: RegExp =
-        /^(https?:\/\/[^\s/$.?#].[^\s]*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))$/i;
+    const urlPattern: RegExp = /^(https?:\/\/[^\s/$.?#].[^\s]*(?:\/[^\s]*)?)$/i;
+    // /^(https?:\/\/[^\s/$.?#].[^\s]*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))$/i; //Stricter check that only allows img extensions
     return urlPattern.test(candidate);
 }
 

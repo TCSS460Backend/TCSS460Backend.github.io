@@ -23,7 +23,7 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @apiParam {String} isbn A 13-digit ISBN number
  *
  * @apiBody {String} [authors] The names of the book's author(s)
- * @apiBody {String} [publication_year] A valid year of publication (0 C.E. to present day + 5 years)
+ * @apiBody {Number} [publication_year] A valid year of publication (0 C.E. to present day + 5 years)
  * @apiBody {String} [title] The book's title
  * @apiBody {String} [image_url] An image of the book
  * @apiBody {String} [image_small_url] A smaller image of the book
@@ -43,6 +43,13 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  */
 router.patch('/update/:isbn', async (request: Request, response: Response) => {
     let { isbn } = request.params;
+    if (!isStringProvided(isbn)) {
+        response.status(400).send({
+            message:
+                'Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.',
+        });
+        return;
+    }
     isbn = isbn.trim();
     if (!isValidISBN(isbn)) {
         response.status(400).send({
@@ -51,6 +58,7 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         });
         return;
     }
+
     const numericIsbn = parseInt(isbn, 10);
     if (isNaN(numericIsbn)) {
         response.status(400).send({
@@ -79,6 +87,13 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
             message: 'Invalid publication year.',
         });
         return;
+    }
+    //This code coerces a number passed as a string into a number - verified by isValidPublicationYear
+    if (!isNumberProvided(request.body.publication_year)) {
+        request.body.publication_year = parseInt(
+            request.body.publication_year,
+            10
+        );
     }
     /*
      * Original Title should be ignored. Code artifact left for possible future use

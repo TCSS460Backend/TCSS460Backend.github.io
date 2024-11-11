@@ -34,15 +34,13 @@ const isValidImageUrl = validationFunctions.isValidImageUrl;
  *
  * @apiSuccess (Success 201) {String} message "New book record successfully created."
  *
- * @apiError (400: Invalid ISBN) {String} message "Invalid or missing isbn13  - isbn13 must be a 13 digit isbn number"
- * @apiError (400: Invalid Author) {String} message "Invalid or missing author(s)  - authors is a text field, check parameter type. Also consider length."
- * @apiError (400: Invalid Publication Year) {String} message "Invalid or missing publication year  - publication years must be in C.E. and no more than 5 years in the future"
- * @apiError (400: Invalid Title) {String} message "Invalid or missing title  - title is a text field, check parameter type. Also consider length."
- * @apiError (400: Invalid ImageURL) {String} message "Invalid or missing imageURL  - must be a url."
- * @apiError (400: Invalid Small ImageURL) {String} message "Invalid or missing small imageURL  - must be a url."
+ * @apiError (400: Invalid ISBN) {String} message "Invalid or missing isbn13 - isbn13 must be a 13 digit isbn number."
+ * @apiError (400: Invalid Author) {String} message "Invalid or missing author(s) - authors is a text field, check parameter type. Also consider length."
+ * @apiError (400: Invalid Publication Year) {String} message "Invalid or missing publication year - publication years must be in C.E. and no more than 5 years in the future."
+ * @apiError (400: Invalid Title) {String} message "Invalid or missing title - title is a text field, check parameter type. Also consider length."
+ * @apiError (400: Invalid ImageURL) {String} message "Invalid or missing imageURL - must be a url."
+ * @apiError (400: Invalid Small ImageURL) {String} message "Invalid or missing small imageURL - must be a url."
  * @apiError (400: Book Not Created) {String} message "Book could not be created - Verify ISBN is not already in database."
- * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse isbn13 to a valid number."
- * @apiError (400: Parse Error) {String} message "Invalid Publication Year format - Unable to parse publication_year to a valid number."
  */
 router.post(
     '/new',
@@ -53,7 +51,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing isbn13  - isbn13 must be a 13 digit isbn number',
+                    'Invalid or missing isbn13 - isbn13 must be a 13 digit isbn number.',
             });
             return;
         }
@@ -65,7 +63,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing author(s)  - authors is a text field, check parameter type. Also consider length.',
+                    'Invalid or missing author(s) - authors is a text field, check parameter type. Also consider length.',
             });
             return;
         }
@@ -77,7 +75,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing publication year  - publication years must be in C.E. and no more than 5 years in the future',
+                    'Invalid or missing publication year - publication years must be in C.E. and no more than 5 years in the future.',
             }); //5 years in the future can be seen in isValidPublicationYear() documentation, exists for planned publishing sake
             return;
         }
@@ -104,7 +102,7 @@ router.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing title  - title is a text field, check parameter type. Also consider length.',
+                    'Invalid or missing title - title is a text field, check parameter type. Also consider length.',
             });
             return;
         }
@@ -115,7 +113,7 @@ router.post(
             return;
         } else {
             response.status(400).send({
-                message: 'Invalid or missing imageURL  - must be a url.',
+                message: 'Invalid or missing imageURL - must be a url.',
             });
             return;
         }
@@ -126,7 +124,7 @@ router.post(
             return;
         } else {
             response.status(400).send({
-                message: 'Invalid or missing small imageURL  - must be a url.',
+                message: 'Invalid or missing small imageURL - must be a url.',
             });
             return;
         }
@@ -138,7 +136,6 @@ router.post(
             const rating1Star = isNumberProvided(request.body.rating_1_star)
                 ? parseInt(request.body.rating_1_star, 10)
                 : 0;
-            console.log('made it here');
             const rating2Star = isNumberProvided(request.body.rating_2_star)
                 ? parseInt(request.body.rating_2_star, 10)
                 : 0;
@@ -164,24 +161,25 @@ router.post(
                     4 * rating4Star +
                     5 * rating5Star) /
                 ratingCount;
-            console.log('made it here2');
             const numericIsbn = parseInt(request.body.isbn13, 10);
-            if (isNaN(numericIsbn)) {
-                return response.status(400).send({
-                    message:
-                        'Invalid ISBN format - Unable to parse isbn13 to a valid number.',
-                });
-            }
+            //Verified pass from previouse isValidISBN() call.
+            // if (isNaN(numericIsbn)) {
+            //     return response.status(400).send({
+            //         message:
+            //             'Invalid ISBN format - Unable to parse isbn13 to a valid number.',
+            //     });
+            // }
             const numericPublicationYear = parseInt(
                 request.body.publication_year,
                 10
             );
-            if (isNaN(numericPublicationYear)) {
-                return response.status(400).send({
-                    message:
-                        'Invalid Publication Year format - Unable to parse publication_year to a valid number.',
-                });
-            }
+            //Verified pass from previouse isValidPublicationYear() call.
+            // if (isNaN(numericPublicationYear)) {
+            //     return response.status(400).send({
+            //         message:
+            //             'Invalid Publication Year format - Unable to parse publication_year to a valid number.',
+            //     });
+            // }
 
             const originalTitle = 'originalTitleField'; // Artifact left for future code changes
 
@@ -204,9 +202,7 @@ router.post(
                 request.body.image_url,
                 request.body.image_small_url,
             ];
-            console.log('made it here3');
             const theResult = await pool.query(theQuery, theValues);
-            console.log('made it here4');
 
             if (theResult.rowCount === 0) {
                 return response.status(400).send({

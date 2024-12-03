@@ -91,7 +91,7 @@ router.get(
                 });
             }
             response.status(200).send({
-                books: theResult.rows[0].map(mapBookToIBook),
+                books: theResult.rows.map(mapBookToIBook)[0],
             });
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {

@@ -125,12 +125,14 @@ router.patch('/rate/:isbn13', async (request: Request, response: Response) => {
         }
         const ratingCount = selectResult.rows[0].rating_count + addOrRemove;
         const ratingAvg =
-            (rating1Star +
-                2 * rating2Star +
-                3 * rating3Star +
-                4 * rating4Star +
-                5 * rating5Star) /
-            ratingCount;
+            ratingCount == 0
+                ? null
+                : (rating1Star +
+                      2 * rating2Star +
+                      3 * rating3Star +
+                      4 * rating4Star +
+                      5 * rating5Star) /
+                  ratingCount;
 
         const theQuery = `UPDATE Books
                 SET rating_avg = $2, rating_count = $3,

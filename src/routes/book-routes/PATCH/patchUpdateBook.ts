@@ -177,7 +177,7 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         }
 
         // Join the set clauses and add the WHERE clause
-        theQuery += setClauses.join(', ') + ' WHERE isbn13 = $1';
+        theQuery += setClauses.join(', ') + ' WHERE isbn13 = $1 RETURNING *;';
 
         const theResult = await pool.query(theQuery, values);
 

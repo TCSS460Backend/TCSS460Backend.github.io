@@ -129,19 +129,19 @@ router.patch(
                 });
             }
             const rating1Star = rating1Defined
-                ? parseInt(request.body.rating_1_Star, 10)
+                ? request.body.rating_1_Star
                 : selectResult.rows[0].rating_1_Star;
             const rating2Star = rating2Defined
-                ? parseInt(request.body.rating_2_Star, 10)
+                ? request.body.rating_2_Star
                 : selectResult.rows[0].rating_2_Star;
             const rating3Star = rating3Defined
-                ? parseInt(request.body.rating_3_Star, 10)
+                ? request.body.rating_3_Star
                 : selectResult.rows[0].rating_3_Star;
             const rating4Star = rating4Defined
-                ? parseInt(request.body.rating_4_Star, 10)
+                ? request.body.rating_4_Star
                 : selectResult.rows[0].rating_4_Star;
             const rating5Star = rating5Defined
-                ? parseInt(request.body.rating_5_Star, 10)
+                ? request.body.rating_5_Star
                 : selectResult.rows[0].rating_5_Star;
 
             const ratingCount =

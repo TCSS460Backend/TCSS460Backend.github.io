@@ -78,8 +78,12 @@ const emailMiddlewareCheck = (
  * @apiBody {String} role a role for this user [1-5]
  * @apiBody {String} phone a phone number for this user
  *
- * @apiSuccess (Success 201) {string} accessToken a newly created JWT
- * @apiSuccess (Success 201) {number} id unique user id
+ * @apiSuccess (Success 201) {String} accessToken a newly created JWT
+ * @apiSuccess (Success 201) {Object} A user object
+ * @apiSuccess (Success 201) {string} user.name The first name associated with email
+ * @apiSuccess (Success 201) {string} user.email The user's email
+ * @apiSuccess (Success 201) {string} user.role The role associated with email
+ * @apiSuccess (Success 201) {number} user.id The internal user id associated with email
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Password) {String} message "Invalid or missing password  - please refer to documentation"
@@ -190,6 +194,12 @@ registerRouter.post(
         const theQuery =
             'INSERT INTO Account_Credential(account_id, salted_hash, salt) VALUES ($1, $2, $3)';
         const values = [request.id, saltedHash, salt];
+        const user = {
+            name: request.body.firstname,
+            email: request.body.email,
+            role: request.body.role,
+            id: request.id,
+        };
         pool.query(theQuery, values)
             .then(() => {
                 const accessToken = jwt.sign(
@@ -206,6 +216,7 @@ registerRouter.post(
                 response.status(201).send({
                     accessToken,
                     id: request.id,
+                    user,
                 });
             })
             .catch((error) => {

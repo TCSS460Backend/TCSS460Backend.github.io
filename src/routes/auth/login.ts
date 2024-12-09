@@ -36,7 +36,11 @@ const key = {
  * @apiBody {String} password a users password
  *
  * @apiSuccess {String} accessToken JSON Web Token
- * @apiSuccess {number} id unique user id
+ * @apiSuccess {Object} A user object
+ * @apiSuccess {string} user.name The first name associated with email
+ * @apiSuccess {string} user.email The user's email
+ * @apiSuccess {string} user.role The role associated with email
+ * @apiSuccess {number} user.id The internal user id associated with email
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information. Either Email or password was not included."
  * @apiError (400: Malformed Authorization Header) {String} message "Malformed Authorization Header"
@@ -109,9 +113,15 @@ signinRouter.post(
                         }
                     );
                     //package and send the results
+                    const user = {
+                        name: result.rows[0].firstname,
+                        email: request.body.email,
+                        role: result.rows[0].account_role,
+                        id: result.rows[0].account_id,
+                    };
                     response.json({
                         accessToken,
-                        id: result.rows[0].account_id,
+                        user,
                     });
                 } else {
                     //credentials dod not match

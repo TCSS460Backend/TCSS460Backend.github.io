@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response, Router } from 'express';
 import { pool } from '../../../core/utilities';
+import { mapBookToIBook } from '../../../core/utilities/interfaces';
 
 const router: Router = express.Router();
 
@@ -31,12 +32,23 @@ function validISBNParam(
  *
  * @apiParam {String} isbn A 13-digit ISBN number
  *
- * @apiSuccess {Object} book The book entry object
- * @apiSuccess {String} book.isbn13 The book's ISBN-13 number
- * @apiSuccess {String} book.title The book's title
- * @apiSuccess {String} book.author The book's author
- * @apiSuccess {String} book.publisher The book's publisher
- * @apiSuccess {Number} book.year The book's publication year
+ * @apiSuccess {Object} books The book entry object.
+ * @apiSuccess {Number} books.isbn13 The book's ISBN-13 number.
+ * @apiSuccess {String} books.authors The names of the book's author(s).
+ * @apiSuccess {Number} books.publication The publication year of the book.
+ * @apiSuccess {String} books.original_title The original title of the book. DEPRECATED - Do not expect this to exist in future updates.
+ * @apiSuccess {String} books.title The book's title.
+ * @apiSuccess {Object} books.ratings Rating information for the book.
+ * @apiSuccess {Number} books.ratings.average The average rating of the book.
+ * @apiSuccess {Number} books.ratings.count The total count of ratings.
+ * @apiSuccess {Number} books.ratings.rating_1 The count of 1-star ratings.
+ * @apiSuccess {Number} books.ratings.rating_2 The count of 2-star ratings.
+ * @apiSuccess {Number} books.ratings.rating_3 The count of 3-star ratings.
+ * @apiSuccess {Number} books.ratings.rating_4 The count of 4-star ratings.
+ * @apiSuccess {Number} books.ratings.rating_5 The count of 5-star ratings.
+ * @apiSuccess {Object} books.icons Image URLs for the book.
+ * @apiSuccess {String} books.icons.large URL for the large image of the book.
+ * @apiSuccess {String} books.icons.small URL for the small image of the book.
  *
  * @apiError (400: Invalid ISBN) {String} message "Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string."
  * @apiError (400: Parse Error) {String} message "Invalid ISBN format - Unable to parse ISBN to a valid number."
@@ -78,7 +90,9 @@ router.get(
                     message: 'Data error - The book record is missing a title.',
                 });
             }
-            response.status(200).send(theResult.rows[0]);
+            response.status(200).send({
+                books: theResult.rows.map(mapBookToIBook)[0],
+            });
         } catch (error) {
             if (error.code === 'ECONNREFUSED') {
                 response.status(503).send({

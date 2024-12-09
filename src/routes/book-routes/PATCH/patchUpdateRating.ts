@@ -92,7 +92,7 @@ router.patch(
                 message: 'Invalid 4 star rating.',
             });
         }
-        const rating5Defined = isDefined(request.body.rating_5_Star);
+        const rating5Defined = isDefined(request.body.rating_5_star);
         if (rating5Defined && !isNumberProvided(request.body.rating_5_star)) {
             response.status(400).send({
                 message: 'Invalid 5 star rating.',
@@ -129,23 +129,23 @@ router.patch(
                 });
             }
             const rating1Star = rating1Defined
-                ? parseInt(request.body.rating_1_Star, 10)
-                : selectResult.rows[0].rating_1_Star;
+                ? request.body.rating_1_star
+                : selectResult.rows[0].rating_1_star;
             const rating2Star = rating2Defined
-                ? parseInt(request.body.rating_2_Star, 10)
-                : selectResult.rows[0].rating_2_Star;
+                ? request.body.rating_2_star
+                : selectResult.rows[0].rating_2_star;
             const rating3Star = rating3Defined
-                ? parseInt(request.body.rating_3_Star, 10)
-                : selectResult.rows[0].rating_3_Star;
+                ? request.body.rating_3_star
+                : selectResult.rows[0].rating_3_star;
             const rating4Star = rating4Defined
-                ? parseInt(request.body.rating_4_Star, 10)
-                : selectResult.rows[0].rating_4_Star;
+                ? request.body.rating_4_star
+                : selectResult.rows[0].rating_4_star;
             const rating5Star = rating5Defined
-                ? parseInt(request.body.rating_5_Star, 10)
-                : selectResult.rows[0].rating_5_Star;
+                ? request.body.rating_5_star
+                : selectResult.rows[0].rating_5_star;
 
             const ratingCount =
-                rating1Star +
+                +rating1Star +
                 rating2Star +
                 rating3Star +
                 rating4Star +

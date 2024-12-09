@@ -5,7 +5,6 @@ const router: Router = express.Router();
 
 const isValidISBN = validationFunctions.isValidISBN;
 const isNumberProvided = validationFunctions.isNumberProvided;
-const isStringProvided = validationFunctions.isStringProvided;
 
 /**
  * @api {patch} /books/rate/:isbn Request to add or remove a book rating by ISBN
@@ -17,7 +16,7 @@ const isStringProvided = validationFunctions.isStringProvided;
  * @apiName patchRate
  * @apiGroup Books
  *
- * @apiParam {String} isbn A 13-digit ISBN number
+ * @apiParam {String} isbn13 A 13-digit ISBN number
  *
  * @apiBody {Number} stars The rating between 1 & 5 inclusive
  * @apiBody {Boolean} [remove] Whether the review should be added or removed. Handles any truthy or falsy value. Defaults to false -> add rating
@@ -32,24 +31,17 @@ const isStringProvided = validationFunctions.isStringProvided;
  * @apiError (400: Invalid Remove Status) {String} message "A star rating cannot have a negative count - Consider setting remove to false."
  *
  */
-router.patch('/rate/:isbn', async (request: Request, response: Response) => {
-    let { isbn } = request.params;
-    if (!isStringProvided(isbn)) {
+router.patch('/rate/:isbn13', async (request: Request, response: Response) => {
+    let { isbn13 } = request.params;
+    isbn13 = isbn13.trim();
+    if (!isValidISBN(isbn13)) {
         response.status(400).send({
             message:
                 'Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.',
         });
         return;
     }
-    isbn = isbn.trim();
-    if (!isValidISBN(isbn)) {
-        response.status(400).send({
-            message:
-                'Invalid or missing ISBN - The provided ISBN must be a 13-digit numeric string.',
-        });
-        return;
-    }
-    const numericIsbn = parseInt(isbn, 10);
+    const numericIsbn = parseInt(isbn13, 10);
     if (isNaN(numericIsbn)) {
         response.status(400).send({
             message:
@@ -73,6 +65,7 @@ router.patch('/rate/:isbn', async (request: Request, response: Response) => {
 
     try {
         const values = [numericIsbn];
+        console.log('Numeric isbn = ' + numericIsbn);
         const selectQuery = `SELECT rating_count, rating_1_star, rating_2_star,
                                 rating_3_star, rating_4_star, rating_5_star
                                 FROM Books
@@ -132,12 +125,14 @@ router.patch('/rate/:isbn', async (request: Request, response: Response) => {
         }
         const ratingCount = selectResult.rows[0].rating_count + addOrRemove;
         const ratingAvg =
-            (rating1Star +
-                2 * rating2Star +
-                3 * rating3Star +
-                4 * rating4Star +
-                5 * rating5Star) /
-            ratingCount;
+            ratingCount == 0
+                ? null
+                : (rating1Star +
+                      2 * rating2Star +
+                      3 * rating3Star +
+                      4 * rating4Star +
+                      5 * rating5Star) /
+                  ratingCount;
 
         const theQuery = `UPDATE Books
                 SET rating_avg = $2, rating_count = $3,

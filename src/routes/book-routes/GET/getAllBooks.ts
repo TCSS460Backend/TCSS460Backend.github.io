@@ -24,7 +24,7 @@ const isNumberProvided = validationFunctions.isNumberProvided;
  * @apiSuccess {Number} books.isbn13 The book's ISBN-13 number.
  * @apiSuccess {String} books.authors The names of the book's author(s).
  * @apiSuccess {Number} books.publication The publication year of the book.
- * @apiSuccess {String} books.original_title The original title of the book.
+ * @apiSuccess {String} books.original_title The original title of the book. DEPRECATED - Do not expect this to exist in future updates.
  * @apiSuccess {String} books.title The book's title.
  * @apiSuccess {Object} books.ratings Rating information for the book.
  * @apiSuccess {Number} books.ratings.average The average rating of the book.
@@ -61,7 +61,7 @@ router.get('/all', async (request: Request, response: Response) => {
                     ORDER BY title ASC
                     LIMIT $1
                     OFFSET $2`;
-        const theValues = [request.query.limit, request.query.offset];
+        const theValues = [limit, offset];
         const { rows } = await pool.query(theQuery, theValues);
 
         const result = await pool.query(

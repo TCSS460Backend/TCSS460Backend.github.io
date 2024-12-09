@@ -49,7 +49,12 @@ function isNumber(x: any): x is number {
  * @returns true if the parameter could be a valid isbn13, false otherwise
  */
 function isValidISBN(candidate: any): boolean {
-    return candidate && candidate.length === 13 && isNumberProvided(candidate);
+    //Cast to a string to check length so that numbers and numeric strings can be accepted
+    return (
+        isDefined(candidate) &&
+        candidate.toString().length === 13 &&
+        isNumberProvided(candidate)
+    );
 }
 /**
  * Checks the parameter to see if it can be a valid date. Valid dates are published in C.E.

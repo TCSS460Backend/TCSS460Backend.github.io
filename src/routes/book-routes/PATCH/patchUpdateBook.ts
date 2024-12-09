@@ -150,7 +150,7 @@ router.patch('/update/:isbn', async (request: Request, response: Response) => {
         //At least one of these is guaranteed to be true
         if (authorDefined) {
             setClauses.push(`authors = $${values.length + 1}`);
-            values.push(request.body.author);
+            values.push(request.body.authors);
         }
         if (publishedDefined) {
             setClauses.push(`publication_year = $${values.length + 1}`);
